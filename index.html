@@ -166,6 +166,62 @@ footer:hover .fn{color:rgba(201,149,42,.12)}
   nav.scrolled{padding:.9rem 1.5rem}
 }
 @media(max-width:560px){.proj-grid{grid-template-columns:1fr}.stat-row{gap:2rem}}
+
+
+/* ── SMOOTHER SECTION MOVEMENT + TRANSITIONS ── */
+body::before{
+  content:'';
+  position:fixed;
+  inset:-20%;
+  pointer-events:none;
+  z-index:-1;
+  background:
+    radial-gradient(circle at 20% 20%,rgba(201,149,42,.10),transparent 28%),
+    radial-gradient(circle at 80% 60%,rgba(232,184,75,.07),transparent 32%),
+    linear-gradient(120deg,rgba(255,255,255,.025),transparent 42%);
+  filter:blur(20px);
+  transform:translate3d(0,0,0);
+  will-change:transform;
+}
+section{isolation:isolate;transition:background-color .8s cubic-bezier(.16,1,.3,1),color .8s cubic-bezier(.16,1,.3,1)}
+section::after{
+  content:'';
+  position:absolute;
+  left:3rem;
+  right:3rem;
+  bottom:0;
+  height:1px;
+  background:linear-gradient(90deg,transparent,rgba(201,149,42,.24),transparent);
+  opacity:.45;
+  transform:scaleX(.35);
+  transform-origin:center;
+  transition:transform 1s cubic-bezier(.16,1,.3,1),opacity 1s cubic-bezier(.16,1,.3,1);
+}
+section.sec-active::after{transform:scaleX(1);opacity:.9}
+.sec-lbl,h2.t,.a-right p,.stat-row,.exp-row,.ps-block,.ps-why,.proj-card,footer .fn,footer .fi{
+  backface-visibility:hidden;
+  transform-style:preserve-3d;
+}
+.sec-lbl{opacity:0;transform:translateY(18px);transition:opacity .9s cubic-bezier(.16,1,.3,1),transform .9s cubic-bezier(.16,1,.3,1)}
+.sec-lbl.in{opacity:1;transform:none}
+h2.t{opacity:0;transform:translateY(38px) scale(.985);transition:opacity 1s cubic-bezier(.16,1,.3,1),transform 1s cubic-bezier(.16,1,.3,1)}
+h2.t.in{opacity:1;transform:none}
+.a-right p{opacity:0;transform:translateY(22px);transition:opacity .9s cubic-bezier(.16,1,.3,1),transform .9s cubic-bezier(.16,1,.3,1)}
+.a-right p.in{opacity:1;transform:none}
+.exp-row,.proj-card,.ps-block,.ps-why{transition:opacity .9s cubic-bezier(.16,1,.3,1),transform .9s cubic-bezier(.16,1,.3,1),background .45s cubic-bezier(.16,1,.3,1),border-color .45s cubic-bezier(.16,1,.3,1)}
+.exp-row.in,.proj-card.in,.ps-block.in,.ps-why.in{opacity:1}
+.proj-card:hover,.exp-row:hover,.ps-block:hover,.ps-why:hover{will-change:transform}
+footer{overflow:hidden;position:relative}
+footer::before{content:'';position:absolute;top:0;left:-30%;width:30%;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);animation:footerLine 6s ease-in-out infinite}
+@keyframes footerLine{0%,100%{left:-30%;opacity:0}20%,70%{opacity:.8}100%{left:100%;opacity:0}}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+  #cur,#curf{display:none}
+  body{cursor:auto}
+}
+@media(max-width:760px){body{cursor:auto}#cur,#curf{display:none}section::after{left:1.5rem;right:1.5rem}}
+
 </style>
 </head>
 <body>
@@ -389,48 +445,8 @@ footer:hover .fn{color:rgba(201,149,42,.12)}
 </footer>
 
 <script>
-/* ══ CURSOR ══ */
+/* ══ SMOOTH PORTFOLIO MOTION ══ */
 const cur=document.getElementById('cur'),curf=document.getElementById('curf');
-let mx=0,my=0,fx=0,fy=0;
-document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px'});
-(function loop(){fx+=(mx-fx)*.11;fy+=(my-fy)*.11;curf.style.left=fx+'px';curf.style.top=fy+'px';requestAnimationFrame(loop)})();
-document.querySelectorAll('a,.proj-card,.exp-row,.cta,.ps-block,.ps-why').forEach(el=>{
-  el.addEventListener('mouseenter',()=>cur.classList.add('hov'));
-  el.addEventListener('mouseleave',()=>cur.classList.remove('hov'));
-});
-
-/* ══ MOUSE GLOW on proj cards ══ */
-document.querySelectorAll('.proj-card').forEach(card=>{
-  const g=card.querySelector('.proj-glow');
-  card.addEventListener('mousemove',e=>{
-    const r=card.getBoundingClientRect();
-    g.style.left=(e.clientX-r.left)+'px';
-    g.style.top=(e.clientY-r.top)+'px';
-  });
-});
-
-/* ══ SCROLL REVEAL ══ */
-const srObs=new IntersectionObserver(entries=>{
-  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in')});
-},{threshold:.08});
-document.querySelectorAll('.sr').forEach(el=>srObs.observe(el));
-
-/* ══ COUNTER ANIMATION ══ */
-let counted=false;
-function tryCount(){
-  if(counted)return;
-  const el=document.getElementById('cnt-yr');
-  if(!el)return;
-  const r=el.getBoundingClientRect();
-  if(r.top<window.innerHeight*.85){
-    counted=true;
-    let v=0;
-    const run=()=>{v+=.06;el.textContent=Math.min(Math.floor(v),2)+'+';if(v<2.5)requestAnimationFrame(run)};
-    run();
-  }
-}
-
-/* ══ SCROLL DRIVER ══ */
 const prog=document.getElementById('prog');
 const nav=document.getElementById('nav');
 const himg=document.getElementById('himg');
@@ -440,103 +456,156 @@ const hrole=document.getElementById('hrole');
 const hloc=document.getElementById('hloc');
 const hcta=document.getElementById('hcta');
 const hscroll=document.getElementById('hscroll');
-const vp=()=>window.innerHeight;
-let tk=false;
+const reduceMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-function tick(){
-  const sy=window.scrollY;
-  const dh=document.documentElement.scrollHeight-window.innerHeight;
-  const pct=sy/dh;
+/* Custom cursor */
+if(!reduceMotion && cur && curf){
+  let mx=0,my=0,fx=0,fy=0;
+  document.addEventListener('mousemove',e=>{
+    mx=e.clientX; my=e.clientY;
+    cur.style.transform=`translate3d(${mx}px,${my}px,0) translate(-50%,-50%)`;
+  });
+  const cursorLoop=()=>{
+    fx+=(mx-fx)*.14; fy+=(my-fy)*.14;
+    curf.style.transform=`translate3d(${fx}px,${fy}px,0) translate(-50%,-50%)`;
+    requestAnimationFrame(cursorLoop);
+  };
+  cursorLoop();
+  document.querySelectorAll('a,.proj-card,.exp-row,.cta,.ps-block,.ps-why').forEach(el=>{
+    el.addEventListener('mouseenter',()=>cur.classList.add('hov'));
+    el.addEventListener('mouseleave',()=>cur.classList.remove('hov'));
+  });
+}
 
-  /* progress bar */
-  prog.style.width=(pct*100)+'%';
+/* Project card spotlight */
+document.querySelectorAll('.proj-card').forEach(card=>{
+  const g=card.querySelector('.proj-glow');
+  if(!g) return;
+  card.addEventListener('mousemove',e=>{
+    const r=card.getBoundingClientRect();
+    g.style.left=(e.clientX-r.left)+'px';
+    g.style.top=(e.clientY-r.top)+'px';
+  });
+});
 
-  /* nav */
-  nav.classList.toggle('scrolled',sy>70);
-
-  /* ── HERO MULTI-LAYER PARALLAX ── */
-  const vph=vp();
-  if(sy<vph*1.4){
-    const p=sy/vph;
-
-    /* photo drifts up slower than scroll */
-    himg.style.transform=`translateY(${sy*.28}px) scale(${1+p*.05})`;
-
-    /* name: fastest drift + fade */
-    const nOp=Math.max(0,1-p*1.25);
-    hname.style.transform=`translateY(${-sy*.22}px)`;
-    hname.style.opacity=nOp;
-
-    /* eyebrow: medium */
-    heye.style.transform=`translateY(${-sy*.13}px)`;
-    heye.style.opacity=Math.max(0,1-p*1.55);
-
-    /* role */
-    hrole.style.transform=`translateY(${-sy*.1}px)`;
-    hrole.style.opacity=Math.max(0,1-p*1.7);
-
-    /* location */
-    hloc.style.transform=`translateY(${-sy*.08}px)`;
-    hloc.style.opacity=Math.max(0,1-p*1.85);
-
-    /* cta: slowest */
-    hcta.style.transform=`translateY(${-sy*.06}px)`;
-    hcta.style.opacity=Math.max(0,1-p*2.1);
-
-    /* scroll hint */
-    hscroll.style.opacity=Math.max(0,1-p*3.5);
-  }
-
-  /* ── H2 DEPTH FLOAT ── */
-  document.querySelectorAll('h2.t').forEach(h=>{
-    const r=h.getBoundingClientRect();
-    const rel=(r.top+r.height/2-vp()/2)/vp();
-    if(!h.classList.contains('sr')||h.classList.contains('in')){
-      h.style.transform=`translateY(${rel*-20}px)`;
+/* Reveal each part/section */
+const revealItems=document.querySelectorAll('.sr,.sec-lbl,h2.t,.a-right p,.stat-row,footer .fn,footer .fi');
+const revealObs=new IntersectionObserver(entries=>{
+  entries.forEach(entry=>{
+    if(entry.isIntersecting){
+      entry.target.classList.add('in');
+      revealObs.unobserve(entry.target);
     }
   });
+},{threshold:.12,rootMargin:'0px 0px -8% 0px'});
+revealItems.forEach((el,i)=>{
+  if(!el.style.transitionDelay && (el.matches('.a-right p') || el.matches('.proj-card') || el.matches('.exp-row'))){
+    el.style.transitionDelay=(Math.min(i%4,3)*.08)+'s';
+  }
+  revealObs.observe(el);
+});
 
-  /* ── PROJ CARDS SCROLL DEPTH ── */
-  document.querySelectorAll('.proj-card.in').forEach(c=>{
-    const r=c.getBoundingClientRect();
-    const rel=(r.top+r.height/2-vp()/2)/vp();
-    c.style.transform=`translateY(${rel*-12}px)`;
+/* Section active glow/line */
+const sectionObs=new IntersectionObserver(entries=>{
+  entries.forEach(entry=>entry.target.classList.toggle('sec-active',entry.isIntersecting));
+},{threshold:.35});
+document.querySelectorAll('section').forEach(sec=>sectionObs.observe(sec));
+
+/* Counter animation */
+let counted=false;
+function tryCount(){
+  if(counted) return;
+  const el=document.getElementById('cnt-yr');
+  if(!el) return;
+  const r=el.getBoundingClientRect();
+  if(r.top<window.innerHeight*.86){
+    counted=true;
+    let start=null;
+    const animate=t=>{
+      if(!start) start=t;
+      const p=Math.min((t-start)/1200,1);
+      const eased=1-Math.pow(1-p,3);
+      el.textContent=Math.floor(eased*2)+'+';
+      if(p<1) requestAnimationFrame(animate);
+    };
+    requestAnimationFrame(animate);
+  }
+}
+
+/* Smooth scroll driver with eased scroll value */
+let currentY=window.scrollY,targetY=window.scrollY,ticking=false;
+const vh=()=>window.innerHeight;
+const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
+
+function applyMotion(){
+  targetY=window.scrollY;
+  currentY+= (targetY-currentY)*.16;
+  const sy=currentY;
+  const dh=document.documentElement.scrollHeight-window.innerHeight;
+  const pct=dh>0?sy/dh:0;
+
+  if(prog) prog.style.transform=`scaleX(${pct})`;
+  if(nav) nav.classList.toggle('scrolled',targetY>70);
+
+  if(himg && sy<vh()*1.45){
+    const p=clamp(sy/vh(),0,1.45);
+    himg.style.transform=`translate3d(0,${sy*.24}px,0) scale(${1+p*.045})`;
+    if(hname){hname.style.transform=`translate3d(0,${-sy*.20}px,0)`;hname.style.opacity=clamp(1-p*1.18,0,1)}
+    if(heye){heye.style.transform=`translate3d(0,${-sy*.12}px,0)`;heye.style.opacity=clamp(1-p*1.45,0,1)}
+    if(hrole){hrole.style.transform=`translate3d(0,${-sy*.09}px,0)`;hrole.style.opacity=clamp(1-p*1.58,0,1)}
+    if(hloc){hloc.style.transform=`translate3d(0,${-sy*.07}px,0)`;hloc.style.opacity=clamp(1-p*1.75,0,1)}
+    if(hcta){hcta.style.transform=`translate3d(0,${-sy*.05}px,0)`;hcta.style.opacity=clamp(1-p*1.95,0,1)}
+    if(hscroll) hscroll.style.opacity=clamp(1-p*3.2,0,1);
+  }
+
+  document.querySelectorAll('section.sec-active').forEach(sec=>{
+    const r=sec.getBoundingClientRect();
+    const rel=(r.top+r.height/2-vh()/2)/vh();
+    sec.style.setProperty('--section-drift',`${rel*-12}px`);
   });
 
-  /* ── EXP ROWS DEPTH ── */
+  document.querySelectorAll('h2.t.in').forEach(h=>{
+    const r=h.getBoundingClientRect();
+    const rel=(r.top+r.height/2-vh()/2)/vh();
+    h.style.transform=`translate3d(0,${rel*-18}px,0)`;
+  });
+
+  document.querySelectorAll('.proj-card.in').forEach((c,i)=>{
+    const r=c.getBoundingClientRect();
+    const rel=(r.top+r.height/2-vh()/2)/vh();
+    c.style.transform=`translate3d(0,${rel*-10}px,0)`;
+  });
+
   document.querySelectorAll('.exp-row.in').forEach(row=>{
     const r=row.getBoundingClientRect();
-    const rel=(r.top+r.height/2-vp()/2)/vp();
-    row.style.transform=`translateY(${rel*-8}px)`;
+    const rel=(r.top+r.height/2-vh()/2)/vh();
+    row.style.transform=`translate3d(0,${rel*-7}px,0)`;
   });
 
-  /* ── POSITION STATEMENT BLOCKS DEPTH ── */
   document.querySelectorAll('.ps-block.in,.ps-why.in').forEach((b,i)=>{
     const r=b.getBoundingClientRect();
-    const rel=(r.top+r.height/2-vp()/2)/vp();
-    b.style.transform=`translateX(${rel*-10*(i%2===0?1:-1)}px)`;
+    const rel=(r.top+r.height/2-vh()/2)/vh();
+    b.style.transform=`translate3d(${rel*-7*(i%2===0?1:-1)}px,0,0)`;
   });
 
-  /* ── STAT NUMBERS SUBTLE BOB ── */
-  document.querySelectorAll('.stn').forEach((s,i)=>{
+  document.querySelectorAll('.stn').forEach(s=>{
     const r=s.getBoundingClientRect();
-    const rel=(r.top-vp()/2)/vp();
-    s.style.transform=`translateY(${rel*-14}px)`;
-  });
-
-  /* ── SECTION LABELS SLIDE ── */
-  document.querySelectorAll('.sec-lbl.in').forEach(l=>{
-    const r=l.getBoundingClientRect();
-    const rel=(r.top-vp()/2)/vp();
-    l.style.transform=`translateX(${rel*-8}px)`;
+    const rel=(r.top-vh()/2)/vh();
+    s.style.transform=`translate3d(0,${rel*-10}px,0)`;
   });
 
   tryCount();
-  tk=false;
+  if(Math.abs(targetY-currentY)>.1){requestAnimationFrame(applyMotion)}else{ticking=false}
 }
 
-window.addEventListener('scroll',()=>{if(!tk){requestAnimationFrame(tick);tk=true}},{passive:true});
-tick();
+function requestMotion(){
+  if(reduceMotion) return;
+  if(!ticking){ticking=true;requestAnimationFrame(applyMotion)}
+}
+window.addEventListener('scroll',requestMotion,{passive:true});
+window.addEventListener('resize',requestMotion,{passive:true});
+requestMotion();
+tryCount();
 </script>
 </body>
 </html>
