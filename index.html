@@ -338,6 +338,177 @@ h2.t em{font-style:italic;color:var(--gold)}
 .ps-why p em{color:var(--goldl);font-style:normal}
 
 
+
+/* ══ WEEK 3 — INFLUENCE MAP ══ */
+#influencemap{background:var(--dark);position:relative;overflow:hidden;padding-bottom:10rem}
+
+/* animated atmosphere */
+#influencemap::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 55% 45% at 20% 30%,rgba(201,149,42,.05) 0%,transparent 65%),
+    radial-gradient(ellipse 45% 50% at 80% 70%,rgba(100,160,255,.04) 0%,transparent 65%);
+  animation:im-atmo 8s ease-in-out infinite alternate;
+}
+@keyframes im-atmo{
+  from{opacity:.6;transform:scale(1)}
+  to{opacity:1;transform:scale(1.04)}
+}
+
+.im-intro{font-size:.96rem;color:var(--gray);line-height:1.9;max-width:640px;margin-bottom:5rem}
+.im-intro strong{color:var(--goldl)}
+
+/* ── AXIS SYSTEM ── */
+.im-outer{display:flex;align-items:stretch;gap:0;position:relative}
+.im-y-label{
+  writing-mode:vertical-rl;transform:rotate(180deg);
+  font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;
+  color:rgba(201,149,42,.35);padding-right:1.2rem;
+  display:flex;align-items:center;white-space:nowrap;flex-shrink:0;
+}
+.im-inner{flex:1;display:flex;flex-direction:column;gap:0}
+.im-x-label{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:0 .25rem;margin-bottom:.8rem;
+  font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;
+  color:rgba(201,149,42,.35);
+}
+.im-x-line{flex:1;height:1px;background:linear-gradient(90deg,rgba(201,149,42,.15),rgba(245,242,236,.06),rgba(201,149,42,.15));margin:0 1.2rem}
+
+/* ── GRID ── */
+.im-grid{
+  display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;
+  gap:2px;background:rgba(201,149,42,.08);
+  border:1px solid rgba(201,149,42,.1);
+  border-radius:4px;overflow:hidden;position:relative;
+}
+
+/* center crosshair lines */
+.im-grid::before{
+  content:'POWER';position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  font-family:'Syne',sans-serif;font-size:5rem;font-weight:800;
+  color:rgba(201,149,42,.04);letter-spacing:-.04em;
+  pointer-events:none;z-index:1;white-space:nowrap;
+}
+.im-cross-h{position:absolute;top:50%;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(201,149,42,.2),transparent);pointer-events:none;z-index:2;transform:scaleX(0);transition:transform 1.2s cubic-bezier(.16,1,.3,1)}
+.im-cross-v{position:absolute;left:50%;top:0;bottom:0;width:1px;background:linear-gradient(to bottom,transparent,rgba(201,149,42,.2),transparent);pointer-events:none;z-index:2;transform:scaleY(0);transition:transform 1.2s cubic-bezier(.16,1,.3,1) .15s}
+.im-grid.lines-in .im-cross-h{transform:scaleX(1)}
+.im-grid.lines-in .im-cross-v{transform:scaleY(1)}
+
+/* ── QUAD BASE ── */
+.im-quad{
+  padding:2.5rem;position:relative;overflow:hidden;
+  background:linear-gradient(145deg,rgba(14,14,20,.99) 0%,rgba(10,10,14,.99) 100%);
+  transition:background .5s;will-change:transform;
+  /* initial state for staggered reveal */
+  opacity:0;
+}
+.im-quad.q-in{opacity:1;transition:opacity .0s}
+
+/* glass shimmer */
+.im-quad::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(105deg,rgba(255,255,255,0) 30%,rgba(255,255,255,.03) 50%,rgba(255,255,255,0) 70%);
+  transform:translateX(-120%);transition:transform .9s cubic-bezier(.16,1,.3,1);pointer-events:none;z-index:1;
+}
+.im-quad:hover::before{transform:translateX(120%)}
+.im-quad:hover{background:linear-gradient(145deg,rgba(20,20,28,1) 0%,rgba(14,14,18,1) 100%)}
+
+/* corner brackets — animate in */
+.im-quad-corner{position:absolute;width:0;height:0;pointer-events:none;transition:width .6s cubic-bezier(.16,1,.3,1),height .6s cubic-bezier(.16,1,.3,1)}
+.im-quad.q-in .im-quad-corner{width:28px;height:28px}
+.im-quad-corner.tl{top:0;left:0;border-top:1.5px solid;border-left:1.5px solid}
+.im-quad-corner.tr{top:0;right:0;border-top:1.5px solid;border-right:1.5px solid;transition-delay:.08s}
+.im-quad-corner.bl{bottom:0;left:0;border-bottom:1.5px solid;border-left:1.5px solid;transition-delay:.16s}
+.im-quad-corner.br{bottom:0;right:0;border-bottom:1.5px solid;border-right:1.5px solid;transition-delay:.24s}
+.im-q1 .im-quad-corner{border-color:rgba(201,149,42,.6)}
+.im-q2 .im-quad-corner{border-color:rgba(100,180,255,.4)}
+.im-q3 .im-quad-corner{border-color:rgba(120,200,140,.4)}
+.im-q4 .im-quad-corner{border-color:rgba(180,180,180,.25)}
+
+/* content stagger in */
+.im-quad .im-q-badge{opacity:0;transform:translateY(12px);transition:opacity .5s,transform .5s cubic-bezier(.16,1,.3,1)}
+.im-quad .im-q-label{opacity:0;transform:translateY(10px);transition:opacity .5s .08s,transform .5s .08s cubic-bezier(.16,1,.3,1)}
+.im-quad .im-q-title{opacity:0;transform:translateY(10px);transition:opacity .5s .16s,transform .5s .16s cubic-bezier(.16,1,.3,1)}
+.im-quad .im-q-roles{opacity:0;transform:translateY(10px);transition:opacity .5s .26s,transform .5s .26s cubic-bezier(.16,1,.3,1)}
+.im-quad .im-q-strategy{opacity:0;transform:translateY(8px);transition:opacity .5s .36s,transform .5s .36s cubic-bezier(.16,1,.3,1)}
+.im-quad.q-in .im-q-badge,.im-quad.q-in .im-q-label,.im-quad.q-in .im-q-title,
+.im-quad.q-in .im-q-roles,.im-quad.q-in .im-q-strategy{opacity:1;transform:none}
+
+/* badge */
+.im-q-badge{
+  display:inline-flex;align-items:center;gap:.4rem;
+  font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;
+  padding:.22rem .7rem;border-radius:1px;
+  margin-bottom:.8rem;font-family:'Syne',sans-serif;font-weight:700;
+  position:relative;z-index:2;width:fit-content;
+}
+.im-q1 .im-q-badge{background:rgba(201,149,42,.1);border:1px solid rgba(201,149,42,.25);color:var(--gold)}
+.im-q2 .im-q-badge{background:rgba(100,180,255,.07);border:1px solid rgba(100,180,255,.2);color:#6AB4FF}
+.im-q3 .im-q-badge{background:rgba(120,200,140,.07);border:1px solid rgba(120,200,140,.2);color:#78C88C}
+.im-q4 .im-q-badge{background:rgba(180,180,180,.06);border:1px solid rgba(180,180,180,.15);color:#AAAAAA}
+
+.im-q-label{font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;margin-bottom:.55rem;position:relative;z-index:2;opacity:.55}
+.im-q1 .im-q-label{color:var(--gold)}.im-q2 .im-q-label{color:#6AB4FF}.im-q3 .im-q-label{color:#78C88C}.im-q4 .im-q-label{color:#AAAAAA}
+
+.im-q-title{font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;color:var(--white);line-height:1.15;margin-bottom:.9rem;transition:color .3s;position:relative;z-index:2}
+.im-q1:hover .im-q-title{color:var(--goldl)}.im-q2:hover .im-q-title{color:#A8D4FF}.im-q3:hover .im-q-title{color:#A8E4B8}.im-q4:hover .im-q-title{color:#DDD}
+
+.im-q-strategy{font-size:.76rem;line-height:1.8;color:var(--gray);padding-top:.75rem;border-top:1px solid rgba(245,242,236,.06);position:relative;z-index:2}
+.im-q-roles{display:flex;flex-direction:column;gap:.35rem;margin-bottom:.75rem;position:relative;z-index:2}
+.im-q-role{display:flex;align-items:center;gap:.6rem;font-size:.74rem;color:rgba(245,242,236,.5);line-height:1.4}
+.im-q-role::before{content:'';width:4px;height:4px;border-radius:50%;flex-shrink:0}
+.im-q1 .im-q-role::before{background:var(--gold)}.im-q2 .im-q-role::before{background:#6AB4FF}
+.im-q3 .im-q-role::before{background:#78C88C}.im-q4 .im-q-role::before{background:#888}
+
+/* glow dot that follows cursor inside quad */
+.im-quad-glow{position:absolute;width:240px;height:240px;border-radius:50%;transform:translate(-50%,-50%);pointer-events:none;opacity:0;transition:opacity .4s;z-index:0}
+.im-q1 .im-quad-glow{background:radial-gradient(circle,rgba(201,149,42,.07),transparent 70%)}
+.im-q2 .im-quad-glow{background:radial-gradient(circle,rgba(100,180,255,.05),transparent 70%)}
+.im-q3 .im-quad-glow{background:radial-gradient(circle,rgba(120,200,140,.05),transparent 70%)}
+.im-q4 .im-quad-glow{background:radial-gradient(circle,rgba(180,180,180,.04),transparent 70%)}
+.im-quad:hover .im-quad-glow{opacity:1}
+
+/* ── REFLECTION ── */
+.im-reflection{
+  margin-top:4rem;
+  padding:3rem;
+  background:linear-gradient(135deg,rgba(255,255,255,.025) 0%,rgba(255,255,255,.01) 50%,rgba(201,149,42,.025) 100%);
+  border:1px solid rgba(255,255,255,.055);
+  border-left:2px solid var(--gold);
+  border-radius:3px;
+  box-shadow:0 20px 60px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.05);
+  backdrop-filter:blur(6px);
+  transition:border-color .4s,box-shadow .5s,transform .5s cubic-bezier(.16,1,.3,1);
+  will-change:transform;
+}
+.im-reflection:hover{
+  border-left-color:var(--goldl);
+  box-shadow:0 32px 80px rgba(0,0,0,.5),0 0 50px rgba(201,149,42,.06),inset 0 1px 0 rgba(255,255,255,.08);
+  transform:translateY(-4px);
+}
+.im-ref-label{font-size:.58rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem;opacity:.65}
+.im-ref-title{font-family:'Syne',sans-serif;font-weight:700;font-size:1.15rem;color:var(--white);margin-bottom:1.2rem;line-height:1.25}
+.im-ref-body{font-size:.87rem;line-height:1.95;color:var(--gray)}
+.im-ref-body em{color:var(--white);font-style:normal}.im-ref-body strong{color:var(--goldl);font-weight:500}
+.im-ref-points{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.5rem;margin-top:2.2rem}
+.im-ref-point{
+  padding:1.4rem 1.5rem;
+  background:rgba(255,255,255,.02);
+  border:1px solid rgba(255,255,255,.05);
+  border-radius:2px;
+  transition:border-color .35s,background .35s,transform .4s cubic-bezier(.16,1,.3,1);
+  /* stagger in */
+  opacity:0;transform:translateY(20px);
+}
+.im-ref-point.rp-in{opacity:1;transform:none;transition:border-color .35s,background .35s,transform .4s cubic-bezier(.16,1,.3,1),opacity .6s cubic-bezier(.16,1,.3,1)}
+.im-ref-point:hover{border-color:rgba(201,149,42,.22);background:rgba(201,149,42,.03);transform:translateY(-3px)}
+.im-ref-point-label{font-size:.55rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:.55rem;opacity:.65}
+.im-ref-point-text{font-size:.78rem;line-height:1.7;color:var(--gray)}
+.im-ref-point-text em{color:rgba(245,242,236,.75);font-style:normal}
+
+
 /* ══ GOLDEN CIRCLE ══ */
 #goldencircle{background:var(--black);overflow:hidden;position:relative}
 #goldencircle::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:900px;height:900px;border-radius:50%;background:radial-gradient(circle,rgba(201,149,42,.04) 0%,transparent 70%);pointer-events:none}
@@ -408,7 +579,7 @@ footer:hover .fn{color:rgba(201,149,42,.12)}
     <li><a href="#about">About</a></li>
     <li><a href="#experience">Experience</a></li>
     <li><a href="#featuredprojects">Projects</a></li>
-    <li><a href="#goldencircle">Golden Circle</a></li><li><a href="#positionstatement">Statement</a></li>
+    <li><a href="#influencemap">Influence</a></li><li><a href="#goldencircle">Golden Circle</a></li><li><a href="#positionstatement">Statement</a></li>
   </ul>
 </nav>
 
@@ -627,6 +798,131 @@ footer:hover .fn{color:rgba(201,149,42,.12)}
 
 <div class="dv"></div>
 
+<!-- ══ WEEK 3 — STRATEGIC INFLUENCE MAP ══ -->
+<section id="influencemap">
+  <p class="sec-lbl sr lft">Week 3 · Influence Without Authority</p>
+  <h2 class="t sr lft" style="transition-delay:.1s">Strategic <em>Influence Map.</em></h2>
+  <p class="im-intro sr bot" style="transition-delay:.2s">
+    Effective leaders don't always hold the authority — they hold the <strong>trust.</strong>
+    This map categorizes stakeholders across my work at the California Center for Digital Twins
+    and AT&amp;T DIRECTV by power and interest, defining the influence strategy for each group.
+  </p>
+
+  <!-- axis + grid -->
+  <div class="im-outer sr bot" style="transition-delay:.28s">
+    <div class="im-y-label">← LOW &nbsp;&nbsp; POWER / INFLUENCE &nbsp;&nbsp; HIGH →</div>
+    <div class="im-inner">
+      <div class="im-x-label">
+        <span>← LOW INTEREST</span>
+        <div class="im-x-line"></div>
+        <span>HIGH INTEREST →</span>
+      </div>
+
+      <div class="im-grid" id="imGrid">
+        <div class="im-cross-h"></div>
+        <div class="im-cross-v"></div>
+
+        <!-- Q2: High Power / Low Interest -->
+        <div class="im-quad im-q2" id="imQ2">
+          <div class="im-quad-glow" id="glow2"></div>
+          <div class="im-quad-corner tl"></div><div class="im-quad-corner tr"></div>
+          <div class="im-quad-corner bl"></div><div class="im-quad-corner br"></div>
+          <div class="im-q-badge">↑ High Power · Low Interest</div>
+          <div class="im-q-label">Strategy: Keep Satisfied</div>
+          <div class="im-q-title">Executive Sponsors &amp; Senior Stakeholders</div>
+          <div class="im-q-roles">
+            <div class="im-q-role">University &amp; research institution leadership</div>
+            <div class="im-q-role">AT&amp;T product directors &amp; VP-level sponsors</div>
+            <div class="im-q-role">City agency department heads</div>
+          </div>
+          <div class="im-q-strategy">Communicate through concise executive summaries and milestone updates. Lead with outcomes, not process. Build credibility through consistent delivery so they trust without needing to be in every decision.</div>
+        </div>
+
+        <!-- Q1: High Power / High Interest -->
+        <div class="im-quad im-q1" id="imQ1">
+          <div class="im-quad-glow" id="glow1"></div>
+          <div class="im-quad-corner tl"></div><div class="im-quad-corner tr"></div>
+          <div class="im-quad-corner bl"></div><div class="im-quad-corner br"></div>
+          <div class="im-q-badge">★ High Power · High Interest</div>
+          <div class="im-q-label">Strategy: Engage Closely</div>
+          <div class="im-q-title">Core Project Teams &amp; Direct Collaborators</div>
+          <div class="im-q-roles">
+            <div class="im-q-role">Digital twin engineers &amp; GIS specialists</div>
+            <div class="im-q-role">QA leads &amp; cross-functional dev teams (AT&amp;T)</div>
+            <div class="im-q-role">Urban planners &amp; architects on corridor initiative</div>
+          </div>
+          <div class="im-q-strategy">Co-create decisions, not just directives. Hold regular syncs, share context openly, and resolve blockers fast. My credibility is built through technical depth and follow-through — not title or authority.</div>
+        </div>
+
+        <!-- Q4: Low Power / Low Interest -->
+        <div class="im-quad im-q4" id="imQ4">
+          <div class="im-quad-glow" id="glow4"></div>
+          <div class="im-quad-corner tl"></div><div class="im-quad-corner tr"></div>
+          <div class="im-quad-corner bl"></div><div class="im-quad-corner br"></div>
+          <div class="im-q-badge">· Low Power · Low Interest</div>
+          <div class="im-q-label">Strategy: Monitor</div>
+          <div class="im-q-title">Adjacent Teams &amp; Peripheral Stakeholders</div>
+          <div class="im-q-roles">
+            <div class="im-q-role">Vendor &amp; third-party software providers</div>
+            <div class="im-q-role">External data providers &amp; open dataset maintainers</div>
+            <div class="im-q-role">Academic observers &amp; peripheral research contacts</div>
+          </div>
+          <div class="im-q-strategy">Maintain awareness without over-investing. Monitor for relevance shifts. Keep a light periodic touchpoint so they can re-engage quickly when priorities evolve.</div>
+        </div>
+
+        <!-- Q3: Low Power / High Interest -->
+        <div class="im-quad im-q3" id="imQ3">
+          <div class="im-quad-glow" id="glow3"></div>
+          <div class="im-quad-corner tl"></div><div class="im-quad-corner tr"></div>
+          <div class="im-quad-corner bl"></div><div class="im-quad-corner br"></div>
+          <div class="im-q-badge">↗ Low Power · High Interest</div>
+          <div class="im-q-label">Strategy: Keep Informed</div>
+          <div class="im-q-title">Community Members &amp; End Users</div>
+          <div class="im-q-roles">
+            <div class="im-q-role">Baldwin Hills corridor residents &amp; advocates</div>
+            <div class="im-q-role">DIRECTV end users &amp; customer experience teams</div>
+            <div class="im-q-role">Students &amp; emerging researchers on the platform</div>
+          </div>
+          <div class="im-q-strategy">Treat this group as the reason the work exists. Share progress visibly — not just in technical language. Their feedback is the most honest signal of real impact. Earn trust through transparency.</div>
+        </div>
+
+      </div><!-- im-grid -->
+    </div><!-- im-inner -->
+  </div><!-- im-outer -->
+
+  <!-- REFLECTION -->
+  <div class="im-reflection sr bot" style="transition-delay:.35s">
+    <div class="im-ref-label">Leadership Reflection</div>
+    <div class="im-ref-title">How this situation required influence rather than authority</div>
+    <div class="im-ref-body">
+      Across both the Baldwin Hills Corridor Initiative and my years at AT&amp;T DIRECTV,
+      I was rarely the most senior person in the room — but I was often the person others looked to for direction.
+      That required a different kind of leadership: <em>influence built on trust, clarity, and consistency.</em>
+      <br/><br/>
+      I couldn't assign tasks to planners, architects, or city officials. What I could do was
+      <strong>show up prepared, communicate clearly, and deliver on every commitment.</strong>
+      Over time, that consistency became its own form of authority.
+    </div>
+    <div class="im-ref-points">
+      <div class="im-ref-point" id="rp0">
+        <div class="im-ref-point-label">What mattered most</div>
+        <div class="im-ref-point-text"><em>Credibility through delivery</em> — every milestone met was a deposit in the trust bank with high-power stakeholders.</div>
+      </div>
+      <div class="im-ref-point" id="rp1">
+        <div class="im-ref-point-label">Leadership behavior</div>
+        <div class="im-ref-point-text"><em>Clarity under ambiguity</em> — when roles were unclear, I named the gap and proposed a path forward rather than waiting for permission.</div>
+      </div>
+      <div class="im-ref-point" id="rp2">
+        <div class="im-ref-point-label">What I learned</div>
+        <div class="im-ref-point-text">I lead most effectively when I <em>listen first, map the landscape, then move with purpose</em> — not reactively, but deliberately.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<div class="dv"></div>
+
 <!-- ══ GOLDEN CIRCLE: WHY – HOW – WHAT ══ -->
 <section id="goldencircle">
   <p class="sec-lbl sr lft">Week 2 · Purpose, Values &amp; Leadership Voice</p>
@@ -761,6 +1057,7 @@ const srObs=new IntersectionObserver(entries=>{
 document.querySelectorAll('.sr').forEach(el=>srObs.observe(el));
 
 
+
 /* ── GOLDEN CIRCLE card glow + divider trigger ── */
 document.querySelectorAll('.gc-card').forEach(card=>{
   card.addEventListener('mousemove',e=>{
@@ -775,6 +1072,117 @@ const gcObs=new IntersectionObserver(entries=>{
 document.querySelectorAll('.gc-card').forEach(c=>gcObs.observe(c));
 
 /* gc-card scroll depth */
+
+/* ══ INFLUENCE MAP — CINEMATIC SCROLL ENGINE ══ */
+(function(){
+  const grid = document.getElementById('imGrid');
+  const quads = [
+    document.getElementById('imQ2'),
+    document.getElementById('imQ1'),
+    document.getElementById('imQ4'),
+    document.getElementById('imQ3'),
+  ];
+  const glows = [
+    document.getElementById('glow2'),
+    document.getElementById('glow1'),
+    document.getElementById('glow4'),
+    document.getElementById('glow3'),
+  ];
+  const refPoints = [
+    document.getElementById('rp0'),
+    document.getElementById('rp1'),
+    document.getElementById('rp2'),
+  ];
+
+  let gridTriggered = false;
+  let refTriggered = false;
+
+  /* Mouse glow follow inside each quad */
+  quads.forEach((q, i) => {
+    if (!q || !glows[i]) return;
+    q.addEventListener('mousemove', e => {
+      const r = q.getBoundingClientRect();
+      glows[i].style.left = (e.clientX - r.left) + 'px';
+      glows[i].style.top  = (e.clientY - r.top)  + 'px';
+    });
+  });
+
+  /* Cinematic staggered quad reveal */
+  function triggerGrid() {
+    if (gridTriggered) return;
+    gridTriggered = true;
+
+    /* crosshair lines draw in first */
+    if (grid) grid.classList.add('lines-in');
+
+    /* then quads fly in from their corners */
+    const origins = [
+      { x: -60, y: -60 }, /* Q2 top-left  */
+      { x:  60, y: -60 }, /* Q1 top-right */
+      { x: -60, y:  60 }, /* Q4 bot-left  */
+      { x:  60, y:  60 }, /* Q3 bot-right */
+    ];
+    quads.forEach((q, i) => {
+      if (!q) return;
+      /* set starting position */
+      q.style.transform = `translate(${origins[i].x}px, ${origins[i].y}px) scale(.92)`;
+      q.style.opacity = '0';
+      q.style.transition = 'none';
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          q.style.transition = `opacity .7s cubic-bezier(.16,1,.3,1) ${i * .12}s, transform .9s cubic-bezier(.16,1,.3,1) ${i * .12}s`;
+          q.style.transform = 'translate(0,0) scale(1)';
+          q.style.opacity = '1';
+          setTimeout(() => q.classList.add('q-in'), (i * 120) + 300);
+        });
+      });
+    });
+  }
+
+  /* Reflection points cascade in */
+  function triggerRefPoints() {
+    if (refTriggered) return;
+    refTriggered = true;
+    refPoints.forEach((rp, i) => {
+      if (!rp) return;
+      setTimeout(() => rp.classList.add('rp-in'), i * 150 + 200);
+    });
+  }
+
+  /* Intersection trigger */
+  const imObs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      if (e.target.id === 'imGrid') triggerGrid();
+      if (e.target.id === 'rp0') triggerRefPoints();
+    });
+  }, { threshold: .15 });
+
+  if (grid) imObs.observe(grid);
+  if (refPoints[0]) imObs.observe(refPoints[0]);
+
+  /* Scroll parallax — each quad drifts at its own rate */
+  window._imParallax = function(sy) {
+    const vph = window.innerHeight;
+    const rates = [-10, -14, -6, -12]; /* Q2, Q1, Q4, Q3 */
+    const xDrifts = [-3, 3, -2, 2];
+    quads.forEach((q, i) => {
+      if (!q || !q.classList.contains('q-in')) return;
+      const r = q.getBoundingClientRect();
+      const rel = (r.top + r.height / 2 - vph / 2) / vph;
+      q.style.transform = `translateY(${rel * rates[i]}px) translateX(${rel * xDrifts[i]}px)`;
+    });
+
+    /* Reflection block depth */
+    const ref = document.querySelector('.im-reflection.in');
+    if (ref) {
+      const r = ref.getBoundingClientRect();
+      const rel = (r.top + r.height / 2 - vph / 2) / vph;
+      ref.style.transform = `translateY(${rel * -12}px)`;
+    }
+  };
+})();
+
 /* ── COUNTER ── */
 let counted=false;
 function tryCount(){
@@ -890,6 +1298,10 @@ function tick(){
     s.style.transform=`translateY(${rel*-14}px)`;
   });
 
+
+
+  /* influence map parallax */
+  if(window._imParallax) window._imParallax(sy);
 
   /* gc cards depth */
   document.querySelectorAll('.gc-card.in-view').forEach((c,i)=>{
